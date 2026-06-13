@@ -1,0 +1,28 @@
+name: ddlx-track3-solution
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pytorch
+  - torchvision
+  - pytorch-cuda=12.1
+  - numpy
+  - pandas
+  - pillow
+  - opencv
+  - pyyaml
+  - tqdm
+  - scikit-learn
+  - pip:
+      - timm
+      - ultralytics
+      - ensemble-boxes
+      - bert-score
+      - modelscope
+      - ms-swift
+      - transformers
+      - accelerate
+      - qwen-vl-utils

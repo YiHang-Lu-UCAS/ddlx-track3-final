@@ -1,0 +1,31 @@
+# Final Submission Evidence
+
+## Final selected zip
+
+Original server path:
+
+```text
+/home/pengsiran/projects_data/luyihang/submissions/ddl_x_test_detector_wbf_old_repeat2_yolov8m_pr125_iou035_post175_req2_textreuse_v1_4variants/fake_nobox_nose_eyes_mouth/submission_ddl_x_test_wbf_old_repeat2_yolov8m_pr125_iou035_post175_req2_textreuse_v1_fake_nobox_nose_eyes_mouth.zip
+```
+
+Server stat:
+
+```text
+size = 137474463 bytes
+mtime = 2026-05-30 14:31:17.993090915 +0800
+sha256 = a00d0f7e81d0742c03842eb45a8b010498b5bd502bf9c17d25620cdf89f11e97
+```
+
+Pipeline log:
+
+```text
+[2026-05-30 14:04:22] WBF full-test 4 variants start tag=wbf_old_repeat2_yolov8m_pr125_iou035_post175_req2_textreuse_v1
+[2026-05-30 14:31:18] [done] WBF full-test 4 variants completed
+```
+
+## Text source zips used by the builder
+
+- normal: `/home/pengsiran/projects_data/luyihang/submissions/ddl_x_test_detector_repeat2_lr1e4_conf015_nms025_textsame_v1_5variants_6gpu/normal/submission_ddl_x_test_repeat2_lr1e4_conf015_nms025_textsame_v1_normal.zip`
+- fake_nobox_eyes: `/home/pengsiran/projects_data/luyihang/submissions/ddl_x_test_detector_repeat2_lr1e4_conf015_nms025_textrerun_fake_nobox_v3_fallback4_6gpu/fake_nobox_eyes/submission_ddl_x_test_repeat2_lr1e4_conf015_nms025_textrerun_fake_nobox_v3_fake_nobox_eyes_fake_nobox_textrerun.zip`
+- fake_nobox_eyes_mouth: `/home/pengsiran/projects_data/luyihang/submissions/ddl_x_test_detector_repeat2_lr1e4_conf015_nms025_textrerun_fake_nobox_v3_fallback4_6gpu/fake_nobox_eyes_mouth/submission_ddl_x_test_repeat2_lr1e4_conf015_nms025_textrerun_fake_nobox_v3_fake_nobox_eyes_mouth_fake_nobox_textrerun.zip`
+- fake_nobox_nose_eyes_mouth: `/home/pengsiran/projects_data/luyihang/submissions/ddl_x_test_detector_repeat2_lr1e4_conf015_nms025_textrerun_fake_nobox_v3_fallback4_6gpu/fake_nobox_nose_eyes_mouth/submission_ddl_x_test_repeat2_lr1e4_conf015_nms025_textrerun_fake_nobox_v3_fake_nobox_nose_eyes_mouth_fake_nobox_textrerun.zip`

@@ -1,0 +1,9 @@
+Selected final variant: fake_nobox_nose_eyes_mouth
+Final selected zip SHA256:
+a00d0f7e81d0742c03842eb45a8b010498b5bd502bf9c17d25620cdf89f11e97
+
+Server mtime:
+2026-05-30 14:31:17.993090915 +0800
+
+Zip size:
+137474463 bytes

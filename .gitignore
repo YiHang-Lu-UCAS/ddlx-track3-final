@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Environments
+.venv/
+venv/
+env/
+conda-env/
+
+# Logs and temporary outputs
+*.log
+logs/
+tmp/
+outputs/
+work/
+cache/
+
+# Challenge generated artifacts
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.jsonl
+*.pkl
+*.npy
+*.npz
+
+# Model weights: publish via GitHub Release, Git LFS, Hugging Face, or organizer upload.
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.onnx
+*.engine
+models/**/*
+!models/
+!models/README.md
+!models/**/
+!models/**/README.md
+
+# Large exact-text and final-artifact payloads should be release assets.
+text_sources/*.zip
+final_artifact/*.zip
+release_assets/*
+!release_assets/README.md
