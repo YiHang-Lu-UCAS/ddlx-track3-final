@@ -8,4 +8,4 @@ Expected release/bundle evidence:
 - SHA256 records for final artifacts.
 - Small validation summaries.
 
-Large evidence payloads should be attached as GitHub Release assets or provided through the organizer-approved model bundle, not committed directly to git.
+Large evidence payloads are hosted in the Hugging Face asset repository or provided through the organizer-approved model bundle, not committed directly to git.
