@@ -40,7 +40,7 @@ models/           README and expected model-weight layout.
 text_sources/     README for cached Qwen-generated text artifacts.
 evidence/         Lightweight evidence and expected saved-box location.
 final_artifact/   Final artifact hash records.
-release_assets/   Checklist for files to attach to GitHub Release.
+release_assets/   Historical checklist; final large assets are hosted on Hugging Face.
 ```
 
 ## Setup
@@ -62,11 +62,24 @@ CUDA, PyTorch, Ultralytics, ModelScope/Swift, and Qwen-VL utilities should match
 
 ## Model Weights
 
-Large model weights are not committed directly to git. See:
+Large model weights are not committed directly to git. They are hosted on Hugging Face:
+
+```text
+https://huggingface.co/limitlesstrain/ddlx-track3-final-assets
+```
+
+To download the model and verification assets into the repository root:
+
+```bash
+hf download limitlesstrain/ddlx-track3-final-assets --local-dir .
+```
+
+The Hugging Face repository contains the full verification assets, including the Qwen2.5-VL base model copy, LoRA adapter, detector/classifier weights, cached Qwen-generated text sources, final selected zip, and evidence files.
+
+Additional local layout notes are in:
 
 ```text
 models/README.md
-release_assets/README.md
 ```
 
 Expected paths after downloading assets:
@@ -137,6 +150,20 @@ Internal development metrics, including dev24k proxy metrics and sampled BERTSco
 ## Submission Boundary
 
 This repository is intended for result verification and method-level reproducibility. It does not claim general state-of-the-art performance and does not report an unsupported final leaderboard score.
+
+## External Asset Link
+
+Model and verification assets:
+
+```text
+https://huggingface.co/limitlesstrain/ddlx-track3-final-assets
+```
+
+Code repository:
+
+```text
+https://github.com/YiHang-Lu-UCAS/ddlx-track3-final
+```
 
 ## Citation
 
