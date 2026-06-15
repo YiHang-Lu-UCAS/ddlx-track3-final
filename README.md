@@ -107,6 +107,7 @@ bash scripts/run_final_single_pipeline.sh verify
 
 The same wrapper also dispatches the exact-artifact rebuild and method-level Qwen explanation rerun modes described below.
 See `docs/verification_submission_guide.md` for the complete submission mapping requested by the organizing committee.
+If organizers want to rerun the submitted models to regenerate a fresh JSON package, see `docs/full_model_rerun.md`.
 
 ### Level 1: exact final artifact verification
 
@@ -153,6 +154,7 @@ See:
 
 ```text
 docs/verification_submission_guide.md
+docs/full_model_rerun.md
 docs/model_manifest.md
 docs/training_summary.md
 docs/explanation_generation_details.md

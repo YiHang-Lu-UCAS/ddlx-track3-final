@@ -15,6 +15,8 @@ Purpose:
   Organizer-facing entrypoint for the single submitted DDL-X Track 3 system.
   The final system is one fixed inference pipeline with classification,
   localization, and explanation branches that jointly produce the final JSON.
+  For a from-model rerun that regenerates a fresh JSON package from images and
+  metadata, follow docs/full_model_rerun.md.
 
 Modes:
   verify   Check the exact selected leaderboard artifact SHA256.

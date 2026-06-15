@@ -120,6 +120,29 @@ predicted or fallback boxes
 prompt content for Visible forgery traces
 ```
 
+## Full Model Rerun
+
+If the organizing committee wants to use the submitted models to regenerate a fresh JSON package, use:
+
+```text
+docs/full_model_rerun.md
+```
+
+That flow reruns the fixed single submitted model solution:
+
+```text
+image and face metadata
+-> ConvNeXt-B classification branch
+-> three detector streams + WBF localization branch
+-> fallback boxes when fake and no WBF box is retained
+-> prompt construction from image + label + boxes
+-> Qwen2.5-VL + LoRA explanation branch
+-> final DDL-X JSON zip
+```
+
+The regenerated JSON follows the same schema as the final leaderboard artifact.
+It may not be byte-identical because Qwen text generation can differ across software and CUDA environments.
+
 ## Inference and Verification Commands
 
 ### 1. Verify the exact submitted artifact
