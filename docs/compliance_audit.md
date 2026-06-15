@@ -1,6 +1,8 @@
 # DDL-X Track 3 Compliance Audit
 
 This document maps the verification bundle to the Track 3 requirements and clarifies which parts are model-generated.
+The package corresponds to one fixed, single submitted model solution used for the leaderboard submission.
+It is a fixed composite inference system with coordinated branches, not a set of alternative submissions.
 
 ## Official requirements checked
 
@@ -17,10 +19,10 @@ From the Track 3 rules, winning solutions should provide:
 
 | Requirement | Bundle evidence | Status |
 |---|---|---|
-| Complete implementation | `src/`, `scripts/`, `configs/final_wbf.yaml` | Covered |
+| Complete implementation | `src/`, `scripts/`, `configs/final_wbf.yaml`, `scripts/run_final_single_pipeline.sh` | Covered |
 | Training pipelines and hyperparameters | `scripts/training/`, `docs/training_summary.md`, Qwen env files in `src/ddli_explain_v1/*.env` | Covered |
-| Evaluation/reproducibility docs | `docs/reproduce_inference.md`, `docs/explanation_method_reproduction.md`, `docs/final_submission_evidence.md` | Covered |
-| Final model weights | `models/classifier/`, `models/detectors/`, `models/explanation/` | Covered |
+| Evaluation/reproducibility docs | `docs/verification_submission_guide.md`, `docs/reproduce_inference.md`, `docs/explanation_method_reproduction.md`, `docs/final_submission_evidence.md` | Covered |
+| Final model weights | `models/classifier/`, `models/detectors/`, `models/explanation/`, `docs/model_manifest.md` | Covered |
 | Final result verification | `evidence/final_submission/`, `evidence/logs/`, `SHA256SUMS.txt`, `FILE_MANIFEST.json` | Covered |
 | Explanation model reproducibility | Qwen base model + LoRA checkpoint + `scripts/run_explanation_inference.sh` | Covered |
 | Dataset usage | Method uses DDL-I/DDL-X paths in provenance scripts; no external private dataset is recorded in this bundle | Covered, but mention in submission email/paper |

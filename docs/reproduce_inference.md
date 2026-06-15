@@ -1,6 +1,13 @@
 # Reproduce / Verification Notes
 
-This bundle supports two verification levels.
+This bundle supports verification of the same single integrated final system used for the leaderboard submission.
+Start with the organizer-facing wrapper:
+
+```bash
+bash scripts/run_final_single_pipeline.sh verify
+```
+
+The wrapper dispatches the exact artifact, rebuild, and Qwen method-level rerun modes described below.
 
 ## Level 1: exact submitted zip verification
 
@@ -21,7 +28,12 @@ a00d0f7e81d0742c03842eb45a8b010498b5bd502bf9c17d25620cdf89f11e97
 Given the DDL-X metadata directory used by the original pipeline, run:
 
 ```bash
-bash scripts/rebuild_from_saved_wbf_boxes.sh   /media/omnisky/sdb/pengsiran/projects_data/luyihang/datasets/DDL-X/metadata_clsadapt020_adapt384_cleanup_top3_v1   /media/omnisky/sdb/pengsiran/projects_data/luyihang/datasets/DDL-X/metadata_fast/face_shard_outputs   /tmp/ddlx_rebuild_wbf
+bash scripts/rebuild_from_saved_wbf_boxes.sh \
+  /path/to/image_scores.csv \
+  /path/to/test_images.csv \
+  /path/to/cls_preds \
+  /path/to/raw_face_outputs \
+  /tmp/ddlx_rebuild_wbf
 ```
 
 This uses:

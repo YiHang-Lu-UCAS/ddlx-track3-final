@@ -1,6 +1,9 @@
 # DDL-X Track 3 Solution
 
 This repository contains the code, configuration, and documentation for our DDL-X Track 3 challenge submission.
+The submitted verification package corresponds to one fixed, single submitted model solution used for the final leaderboard submission.
+It should be reviewed as a fixed composite inference system rather than as separate alternative submissions.
+Internally, the system has a classification branch, a localization branch, and an explanation branch, but these branches are invoked together by the same final pipeline to produce one JSON output per image.
 
 The system produces three required outputs for each test image:
 
@@ -22,10 +25,11 @@ a00d0f7e81d0742c03842eb45a8b010498b5bd502bf9c17d25620cdf89f11e97
 
 ## Method Summary
 
-- Classification: ConvNeXt-B face-level binary classifier.
-- Localization: WBF over three detector streams, `old`, `repeat2`, and `yolov8m`.
-- Fallback boxes: for fake images without retained WBF boxes, boxes are generated from model-derived face landmarks and deterministic geometry.
-- Explanations: Qwen2.5-VL-3B-Instruct plus LoRA checkpoint-1500.
+- Single submitted system: one fixed inference pipeline that jointly writes the three required DDL-X fields.
+- Classification branch: ConvNeXt-B face-level binary classifier.
+- Localization branch: WBF over three detector streams, `old`, `repeat2`, and `yolov8m`.
+- Fallback post-processing: for fake images without retained WBF boxes, boxes are generated from model-derived face landmarks and deterministic geometry.
+- Explanation branch: Qwen2.5-VL-3B-Instruct plus LoRA checkpoint-1500, conditioned on the image, predicted label, and boxes.
 
 All output fields are produced by trained models and deterministic post-processing. The explanations are not manually written, and the fallback boxes are not manually drawn.
 
@@ -95,6 +99,15 @@ models/explanation/qwen2_5_vl_3b_lora_checkpoint1500/
 
 ## Reproducibility Modes
 
+For organizer verification, start from the single-system entrypoint:
+
+```bash
+bash scripts/run_final_single_pipeline.sh verify
+```
+
+The same wrapper also dispatches the exact-artifact rebuild and method-level Qwen explanation rerun modes described below.
+See `docs/verification_submission_guide.md` for the complete submission mapping requested by the organizing committee.
+
 ### Level 1: exact final artifact verification
 
 This checks that the selected final zip matches the recorded SHA256:
@@ -139,6 +152,8 @@ The regenerated text may be semantically similar but byte-different from cached 
 See:
 
 ```text
+docs/verification_submission_guide.md
+docs/model_manifest.md
 docs/training_summary.md
 docs/explanation_generation_details.md
 docs/final_submission_evidence.md
@@ -149,7 +164,7 @@ Internal development metrics, including dev24k proxy metrics and sampled BERTSco
 
 ## Submission Boundary
 
-This repository is intended for result verification and method-level reproducibility. It does not claim general state-of-the-art performance and does not report an unsupported final leaderboard score.
+This repository is intended for result verification and method-level reproducibility of the same fixed final leaderboard system. It does not claim general state-of-the-art performance and does not report an unsupported final leaderboard score.
 
 ## External Asset Link
 
