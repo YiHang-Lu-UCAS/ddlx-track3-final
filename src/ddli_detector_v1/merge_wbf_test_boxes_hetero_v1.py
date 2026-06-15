@@ -8,7 +8,11 @@ from collections import defaultdict
 from pathlib import Path
 
 
-WEIGHTS = {"old": 0.7, "repeat2": 1.35, "yolov8m": 1.0}
+WEIGHTS = {
+    "detector_a_fullmask_stageb": 0.7,
+    "detector_b_conservative_stageb": 1.35,
+    "detector_c_yolov8m_stageb": 1.0,
+}
 
 
 def iou(a: list[float], b: list[float]) -> float:
@@ -78,9 +82,9 @@ def weighted_fusion(candidates: list[tuple[float, list[float], str]], match_iou:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--old-glob", required=True)
-    ap.add_argument("--repeat2-glob", required=True)
-    ap.add_argument("--yolov8m-glob", required=True)
+    ap.add_argument("--detector-a-glob", "--old-glob", dest="detector_a_glob", required=True)
+    ap.add_argument("--detector-b-glob", "--repeat2-glob", dest="detector_b_glob", required=True)
+    ap.add_argument("--detector-c-glob", "--yolov8m-glob", dest="detector_c_glob", required=True)
     ap.add_argument("--pre-conf", type=float, default=0.125)
     ap.add_argument("--wbf-iou", type=float, default=0.35)
     ap.add_argument("--post-conf", type=float, default=0.175)
@@ -93,9 +97,9 @@ def main() -> None:
     loaded = {}
     summaries = {}
     for name, pattern in [
-        ("old", args.old_glob),
-        ("repeat2", args.repeat2_glob),
-        ("yolov8m", args.yolov8m_glob),
+        ("detector_a_fullmask_stageb", args.detector_a_glob),
+        ("detector_b_conservative_stageb", args.detector_b_glob),
+        ("detector_c_yolov8m_stageb", args.detector_c_glob),
     ]:
         loaded[name], summaries[name] = load_csvs(pattern, name, args.pre_conf)
 
@@ -108,7 +112,7 @@ def main() -> None:
     clusters_seen = clusters_kept = require_filtered = score_filtered = 0
     for iid in sorted(image_ids):
         candidates: list[tuple[float, list[float], str]] = []
-        for name in ("old", "repeat2", "yolov8m"):
+        for name in ("detector_a_fullmask_stageb", "detector_b_conservative_stageb", "detector_c_yolov8m_stageb"):
             candidates.extend(loaded[name].get(iid, []))
         clusters = weighted_fusion(candidates, args.wbf_iou)
         clusters_seen += len(clusters)
@@ -137,7 +141,7 @@ def main() -> None:
     out_json.write_text(json.dumps(output, ensure_ascii=False), encoding="utf-8")
     summary = {
         "config": {
-            "models": "old+repeat2+yolov8m",
+            "models": "detector_a_fullmask_stageb+detector_b_conservative_stageb+detector_c_yolov8m_stageb",
             "weights": WEIGHTS,
             "pre_conf": args.pre_conf,
             "wbf_iou": args.wbf_iou,

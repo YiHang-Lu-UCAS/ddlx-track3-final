@@ -10,20 +10,23 @@
 
 ## Detectors
 
-### old detector
+### detector_a_fullmask_stageb
 
-- Bundle path: `models/detectors/old_fullmask_continue96_stageb3_best.pt`
+- Bundle path: `models/detectors/detector_a_fullmask_stageb.pt`
 - Original path: `/home/pengsiran/projects_data/luyihang/experiments/ddli_bbox_detector_fullmask_continue96_bestdet_stageb3_6gpu_v3/stageb_dev_adapt3/weights/best.pt`
+- Legacy internal name: `old`
 
-### repeat2 detector
+### detector_b_conservative_stageb
 
-- Bundle path: `models/detectors/repeat2_conservative_lr1e4_stageb_best.pt`
+- Bundle path: `models/detectors/detector_b_conservative_stageb.pt`
 - Original path: `/home/pengsiran/projects_data/luyihang/experiments/ddli_bbox_detector_fullmask_continue96_repeat2_conservative_lr1e4_v1/stageb_dev_adapt3_lr1e4/weights/best.pt`
+- Legacy internal name: `repeat2`
 
-### YOLOv8m detector
+### detector_c_yolov8m_stageb
 
-- Bundle path: `models/detectors/yolov8m512_stageab_stageb_best.pt`
+- Bundle path: `models/detectors/detector_c_yolov8m_stageb.pt`
 - Original path: `/home/pengsiran/projects_data/luyihang/experiments/ddli_bbox_detector_hetero_yolov8m512_stageab_v1/stageb_dev_adapt3_b96/weights/best.pt`
+- Legacy internal name: `yolov8m`
 
 ## Text sources
 

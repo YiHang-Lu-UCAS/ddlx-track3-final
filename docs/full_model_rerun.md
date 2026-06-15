@@ -5,7 +5,7 @@ This document describes the flow for organizers who want to use the submitted mo
 This is different from exact artifact reconstruction:
 
 - exact artifact reconstruction uses saved WBF boxes and cached Qwen-generated text to reproduce the final leaderboard zip/hash;
-- full model rerun invokes the submitted model branches again to produce a new JSON package from images and metadata.
+- full model rerun invokes the submitted model branches again to produce a new JSON package from input images.
 
 The rerun is expected to produce valid DDL-X JSON files with the same fields and method, but Qwen-generated text may not be byte-identical to the cached final artifact unless the full software, CUDA, preprocessing, and generation environment is held fixed.
 
@@ -15,23 +15,27 @@ Required inputs:
 
 ```text
 DDL-X image directory
-test_images.csv with image_id, image_path, width, height
-face preprocessing outputs with accepted face crops and landmarks
 models/classifier/convnextb_cls_dev_adapt_head_stage4_last.pt
-models/detectors/old_fullmask_continue96_stageb3_best.pt
-models/detectors/repeat2_conservative_lr1e4_stageb_best.pt
-models/detectors/yolov8m512_stageab_stageb_best.pt
+models/detectors/detector_a_fullmask_stageb.pt
+models/detectors/detector_b_conservative_stageb.pt
+models/detectors/detector_c_yolov8m_stageb.pt
 models/explanation/qwen2_5_vl_3b_instruct/
 models/explanation/qwen2_5_vl_3b_lora_checkpoint1500/
 ```
 
-The original server launcher and paths are preserved in:
+Run the single public inference entrypoint:
 
-```text
-scripts/launch_wbf_hetero_fulltest_4variants_v1.sh
+```bash
+python -m src.ddlx_full_infer_v1.run_end_to_end \
+  --image-dir /path/to/test/images \
+  --model-root /path/to/model_package/models \
+  --out-dir /path/to/output \
+  --gpus auto
 ```
 
-In a clean organizer environment, replace those absolute paths with local paths to the DDL-X image directory, metadata, and downloaded model weights.
+The script creates the image manifest and face preprocessing metadata internally.
+The original server launcher and paths are still preserved in
+`scripts/launch_wbf_hetero_fulltest_4variants_v1.sh` as provenance.
 
 ## Output
 
@@ -58,7 +62,7 @@ Box coordinates are integer values on the DDL-X 1-1000 scale.
 
 ### 1. Prepare image and face metadata
 
-Create or provide:
+The entrypoint creates:
 
 ```text
 test_images.csv
@@ -66,7 +70,8 @@ seg_face_shards/shard_*.csv
 raw_face_outputs/shard_*/faces.jsonl
 ```
 
-The face metadata must include the accepted face rows and model-derived landmarks used by the deterministic fallback box generator.
+The face metadata includes accepted face rows and model-derived landmarks used by
+the deterministic fallback box generator.
 
 ### 2. Run the classification branch
 
@@ -100,9 +105,9 @@ fake_prob >= 0.20
 Run the three detector streams over the face/image metadata:
 
 ```text
-old      -> models/detectors/old_fullmask_continue96_stageb3_best.pt
-repeat2  -> models/detectors/repeat2_conservative_lr1e4_stageb_best.pt
-yolov8m  -> models/detectors/yolov8m512_stageab_stageb_best.pt
+detector_a_fullmask_stageb      -> models/detectors/detector_a_fullmask_stageb.pt
+detector_b_conservative_stageb  -> models/detectors/detector_b_conservative_stageb.pt
+detector_c_yolov8m_stageb       -> models/detectors/detector_c_yolov8m_stageb.pt
 ```
 
 Expected detector outputs:
@@ -122,7 +127,7 @@ src/ddli_detector_v1/merge_wbf_test_boxes_hetero_v1.py
 WBF settings:
 
 ```text
-weights = old:0.7, repeat2:1.35, yolov8m:1.0
+weights = detector_a_fullmask_stageb:0.7, detector_b_conservative_stageb:1.35, detector_c_yolov8m_stageb:1.0
 pre_conf = 0.125
 wbf_iou = 0.35
 post_conf = 0.175

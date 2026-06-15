@@ -11,9 +11,9 @@ https://huggingface.co/limitlesstrain/ddlx-track3-final-assets
 Recommended assets:
 
 1. `convnextb_cls_dev_adapt_head_stage4_last.pt`
-2. `old_fullmask_continue96_stageb3_best.pt`
-3. `repeat2_conservative_lr1e4_stageb_best.pt`
-4. `yolov8m512_stageab_stageb_best.pt`
+2. `detector_a_fullmask_stageb.pt`
+3. `detector_b_conservative_stageb.pt`
+4. `detector_c_yolov8m_stageb.pt`
 5. `models/explanation/qwen2_5_vl_3b_instruct/`
 6. `models/explanation/qwen2_5_vl_3b_lora_checkpoint1500/`
 7. `text_sources/`

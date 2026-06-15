@@ -14,9 +14,9 @@ The full Hugging Face bundle also contains `FILE_MANIFEST.json` with per-file ch
 | Component | Package path | Role in single system | Source / pretrained backbone | Size bytes | SHA256 |
 |---|---|---|---|---:|---|
 | Classifier branch | `models/classifier/convnextb_cls_dev_adapt_head_stage4_last.pt` | Face-level fake probability; image score is max face probability | ConvNeXt-B | 350357358 | `7efbeb496871a524a11dc50fbd8025fda68cd4b333344066559955cf5d3763ea` |
-| Localization branch, old | `models/detectors/old_fullmask_continue96_stageb3_best.pt` | YOLO-family detector stream for WBF | Ultralytics YOLO-family detector | 22490915 | `0a5fa22ca148c969d958fb6e7f104a309be4f78f332a4ea5212c30fcbb8ac253` |
-| Localization branch, repeat2 | `models/detectors/repeat2_conservative_lr1e4_stageb_best.pt` | YOLO-family detector stream for WBF | Ultralytics YOLO-family detector | 22490915 | `71c300cef6e4162c31be8c58a7f32f7a14ceacc4d5a41efcd09ec45b8407f30e` |
-| Localization branch, yolov8m | `models/detectors/yolov8m512_stageab_stageb_best.pt` | YOLOv8m detector stream for WBF | Ultralytics YOLOv8m | 52003147 | `e347e40511a7561d8dba8ef04144bc0327a4ca9781cac24bf93643ed7047ab4c` |
+| Localization branch A | `models/detectors/detector_a_fullmask_stageb.pt` | Full-mask Stage-B detector stream for WBF | Ultralytics YOLO-family detector | 22490915 | `0a5fa22ca148c969d958fb6e7f104a309be4f78f332a4ea5212c30fcbb8ac253` |
+| Localization branch B | `models/detectors/detector_b_conservative_stageb.pt` | Conservative Stage-B detector stream for WBF | Ultralytics YOLO-family detector | 22490915 | `71c300cef6e4162c31be8c58a7f32f7a14ceacc4d5a41efcd09ec45b8407f30e` |
+| Localization branch C | `models/detectors/detector_c_yolov8m_stageb.pt` | YOLOv8m Stage-B detector stream for WBF | Ultralytics YOLOv8m | 52003147 | `e347e40511a7561d8dba8ef04144bc0327a4ca9781cac24bf93643ed7047ab4c` |
 | Explanation branch adapter | `models/explanation/qwen2_5_vl_3b_lora_checkpoint1500/adapter_model.safetensors` | LoRA adapter for visible-forgery explanation generation | Qwen2.5-VL-3B-Instruct + LoRA | 119809088 | `f2d5c9106c43d2a6db29e658e60e207ebde9a083ff0858a9e0c2bdab97c7e8bf` |
 
 ## Qwen Base Model Copy
@@ -54,7 +54,7 @@ The verification bundle includes the base-model copy used with the LoRA adapter:
 | Subsystem | Setting |
 |---|---|
 | Classification threshold | `fake_prob >= 0.20` |
-| WBF detector streams | `old`, `repeat2`, `yolov8m` |
+| WBF detector streams | `detector_a_fullmask_stageb`, `detector_b_conservative_stageb`, `detector_c_yolov8m_stageb` |
 | WBF weights | `0.7 / 1.35 / 1.0` |
 | WBF pre-confidence | `0.125` |
 | WBF IoU | `0.35` |

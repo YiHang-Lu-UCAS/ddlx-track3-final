@@ -8,11 +8,11 @@ classification:
   image_aggregation: max(face_fake_probability)
   fake_threshold: 0.20
 wbf:
-  models: [old, repeat2, yolov8m]
+  models: [detector_a_fullmask_stageb, detector_b_conservative_stageb, detector_c_yolov8m_stageb]
   weights:
-    old: 0.7
-    repeat2: 1.35
-    yolov8m: 1.0
+    detector_a_fullmask_stageb: 0.7
+    detector_b_conservative_stageb: 1.35
+    detector_c_yolov8m_stageb: 1.0
   pre_conf: 0.125
   wbf_iou: 0.35
   post_conf: 0.175

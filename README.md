@@ -27,7 +27,7 @@ a00d0f7e81d0742c03842eb45a8b010498b5bd502bf9c17d25620cdf89f11e97
 
 - Single submitted system: one fixed inference pipeline that jointly writes the three required DDL-X fields.
 - Classification branch: ConvNeXt-B face-level binary classifier.
-- Localization branch: WBF over three detector streams, `old`, `repeat2`, and `yolov8m`.
+- Localization branch: WBF over three detector streams, `detector_a_fullmask_stageb`, `detector_b_conservative_stageb`, and `detector_c_yolov8m_stageb`.
 - Fallback post-processing: for fake images without retained WBF boxes, boxes are generated from model-derived face landmarks and deterministic geometry.
 - Explanation branch: Qwen2.5-VL-3B-Instruct plus LoRA checkpoint-1500, conditioned on the image, predicted label, and boxes.
 
@@ -90,16 +90,40 @@ Expected paths after downloading assets:
 
 ```text
 models/classifier/convnextb_cls_dev_adapt_head_stage4_last.pt
-models/detectors/old_fullmask_continue96_stageb3_best.pt
-models/detectors/repeat2_conservative_lr1e4_stageb_best.pt
-models/detectors/yolov8m512_stageab_stageb_best.pt
+models/detectors/detector_a_fullmask_stageb.pt
+models/detectors/detector_b_conservative_stageb.pt
+models/detectors/detector_c_yolov8m_stageb.pt
 models/explanation/qwen2_5_vl_3b_instruct/
 models/explanation/qwen2_5_vl_3b_lora_checkpoint1500/
 ```
 
 ## Reproducibility Modes
 
-For organizer verification, start from the single-system entrypoint:
+For raw-image model rerun, use the single public inference entrypoint:
+
+```bash
+python -m src.ddlx_full_infer_v1.run_end_to_end \
+  --image-dir /path/to/test/images \
+  --model-root /path/to/model_package/models \
+  --out-dir /path/to/output \
+  --gpus auto
+```
+
+The equivalent bash wrapper is `scripts/run_end_to_end_from_images.sh`.
+If Swift is installed in a separate environment, add `--swift-command /path/to/env/bin/swift`.
+
+This command scans input images, runs preprocessing, classification, localization,
+fallback box generation, Qwen explanation generation, and writes:
+
+```text
+/path/to/output/final_json/*.json
+/path/to/output/submission_model_rerun.zip
+/path/to/output/run_summary.json
+```
+
+See `docs/reproduce_from_images.md` for the complete raw-image reproduction flow.
+
+For exact organizer artifact verification, start from:
 
 ```bash
 bash scripts/run_final_single_pipeline.sh verify
@@ -107,7 +131,7 @@ bash scripts/run_final_single_pipeline.sh verify
 
 The same wrapper also dispatches the exact-artifact rebuild and method-level Qwen explanation rerun modes described below.
 See `docs/verification_submission_guide.md` for the complete submission mapping requested by the organizing committee.
-If organizers want to rerun the submitted models to regenerate a fresh JSON package, see `docs/full_model_rerun.md`.
+If organizers want to rerun the submitted models to regenerate a fresh JSON package, use `scripts/run_end_to_end_from_images.sh`.
 
 ### Level 1: exact final artifact verification
 
@@ -154,6 +178,7 @@ See:
 
 ```text
 docs/verification_submission_guide.md
+docs/reproduce_from_images.md
 docs/full_model_rerun.md
 docs/model_manifest.md
 docs/training_summary.md

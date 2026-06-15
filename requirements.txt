@@ -16,3 +16,4 @@ ms-swift
 transformers
 accelerate
 qwen-vl-utils
+facenet-pytorch

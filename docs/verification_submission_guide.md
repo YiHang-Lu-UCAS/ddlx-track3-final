@@ -48,8 +48,10 @@ Training, inference, evaluation, and post-processing code are organized as follo
 
 ```text
 src/ddli_cls_v1/          classification utilities and submission validation
+src/ddli_classification_v1/ ConvNeXt-B training and test inference code
 src/ddli_detector_v1/     detector/WBF training, sweep, merge, and package builders
 src/ddli_explain_v1/      Qwen explanation data construction, inference launchers, and scoring
+src/ddlx_full_infer_v1/   single public raw-image to JSON inference interface
 scripts/                  organizer-facing verification and reproduction entrypoints
 configs/                  final WBF and threshold configuration
 ```
@@ -58,6 +60,8 @@ Important entrypoints:
 
 ```text
 scripts/run_final_single_pipeline.sh
+scripts/run_end_to_end_from_images.sh
+scripts/smoke_end_to_end_from_images.sh
 scripts/verify_bundle.sh
 scripts/rebuild_from_saved_wbf_boxes.sh
 scripts/run_explanation_inference.sh
@@ -97,6 +101,17 @@ The model inventory and checksums are listed in `docs/model_manifest.md`.
 
 ## Data Preparation
 
+For raw-image model rerun, provide the official test image directory. The file
+stem is used as `image_id`; file stems should be unique.
+
+```text
+/path/to/test/images/*.jpg
+```
+
+The end-to-end entrypoint creates `test_images.csv`, face/landmark metadata,
+classification predictions, detector outputs, WBF boxes, final JSON files, and a
+zip package.
+
 For exact hash verification of the selected final zip, no dataset images are required.
 
 For exact artifact reconstruction from saved WBF boxes, provide the original DDL-X metadata and face preprocessing outputs:
@@ -122,13 +137,17 @@ prompt content for Visible forgery traces
 
 ## Full Model Rerun
 
-If the organizing committee wants to use the submitted models to regenerate a fresh JSON package, use:
+If the organizing committee wants to use the submitted models to regenerate a fresh JSON package from images, run:
 
-```text
-docs/full_model_rerun.md
+```bash
+python -m src.ddlx_full_infer_v1.run_end_to_end \
+  --image-dir /path/to/test/images \
+  --model-root /path/to/model_package/models \
+  --out-dir /path/to/output \
+  --gpus auto
 ```
 
-That flow reruns the fixed single submitted model solution:
+That command reruns the fixed single submitted model solution:
 
 ```text
 image and face metadata
