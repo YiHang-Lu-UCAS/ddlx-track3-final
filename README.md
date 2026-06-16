@@ -11,16 +11,11 @@ The system produces three required outputs for each test image:
 2. localization boxes for visible manipulated regions;
 3. text explanations for visible forgery traces.
 
-The final selected variant is:
+The model-rerun entrypoint regenerates a fresh JSON package from input images.
+The selected fallback behavior for fake images without retained WBF boxes is:
 
 ```text
 fake_nobox_nose_eyes_mouth
-```
-
-Final selected zip SHA256:
-
-```text
-a00d0f7e81d0742c03842eb45a8b010498b5bd502bf9c17d25620cdf89f11e97
 ```
 
 ## Method Summary
@@ -41,10 +36,6 @@ scripts/          Top-level verification and reproduction entrypoints.
 src/              Classifier, detector, WBF, and explanation scripts.
 docs/             Reproduction notes, model sources, training summary, and compliance audit.
 models/           README and expected model-weight layout.
-text_sources/     README for cached Qwen-generated text artifacts.
-evidence/         Lightweight evidence and expected saved-box location.
-final_artifact/   Final artifact hash records.
-release_assets/   Historical checklist; final large assets are hosted on Hugging Face.
 ```
 
 ## Setup
@@ -78,7 +69,7 @@ To download the model and verification assets into the repository root:
 hf download limitlesstrain/ddlx-track3-final-assets --local-dir .
 ```
 
-The Hugging Face repository contains the full verification assets, including the Qwen2.5-VL base model copy, LoRA adapter, detector/classifier weights, cached Qwen-generated text sources, final selected zip, and evidence files.
+The Hugging Face repository contains the model-rerun assets, including the Qwen2.5-VL base model copy, LoRA adapter, detector/classifier weights, source code, scripts, configuration files, and documentation.
 
 Additional local layout notes are in:
 
@@ -97,9 +88,9 @@ models/explanation/qwen2_5_vl_3b_instruct/
 models/explanation/qwen2_5_vl_3b_lora_checkpoint1500/
 ```
 
-## Reproducibility Modes
+## Reproduce JSON From Images
 
-For raw-image model rerun, use the single public inference entrypoint:
+Use the single public inference entrypoint:
 
 ```bash
 python -m src.ddlx_full_infer_v1.run_end_to_end \
@@ -123,55 +114,6 @@ fallback box generation, Qwen explanation generation, and writes:
 
 See `docs/reproduce_from_images.md` for the complete raw-image reproduction flow.
 
-For exact organizer artifact verification, start from:
-
-```bash
-bash scripts/run_final_single_pipeline.sh verify
-```
-
-The same wrapper also dispatches the exact-artifact rebuild and method-level Qwen explanation rerun modes described below.
-See `docs/verification_submission_guide.md` for the complete submission mapping requested by the organizing committee.
-If organizers want to rerun the submitted models to regenerate a fresh JSON package, use `scripts/run_end_to_end_from_images.sh`.
-
-### Level 1: exact final artifact verification
-
-This checks that the selected final zip matches the recorded SHA256:
-
-```bash
-bash scripts/verify_bundle.sh
-```
-
-### Level 2: rebuild from saved WBF boxes
-
-This path rebuilds the four WBF variants using:
-
-- saved WBF boxes;
-- cached Qwen-generated text zips under `text_sources/`;
-- `src/ddli_detector_v1/build_wbf_text_from_variant_zips.py`.
-
-```bash
-bash scripts/rebuild_from_saved_wbf_boxes.sh \
-  /path/to/image_scores.json \
-  /path/to/test_images.json \
-  /path/to/cls_preds_dir \
-  /path/to/raw_face_dir \
-  /tmp/ddlx_rebuild_wbf
-```
-
-### Level 3: method-level Qwen explanation reproduction
-
-This path reruns explanation generation from the model stack:
-
-- Qwen2.5-VL-3B-Instruct;
-- LoRA checkpoint-1500;
-- image paths, predicted labels, and boxes.
-
-```bash
-bash scripts/run_explanation_inference.sh /path/to/explain_inputs.jsonl /tmp/ddlx_qwen_verify
-```
-
-The regenerated text may be semantically similar but byte-different from cached final text. The cached `text_sources/` files are used only for exact leaderboard artifact reconstruction.
-
 ## Training and Selection Notes
 
 See:
@@ -184,7 +126,6 @@ docs/technical_report.md
 docs/model_manifest.md
 docs/training_summary.md
 docs/explanation_generation_details.md
-docs/final_submission_evidence.md
 configs/final_wbf.yaml
 ```
 
@@ -192,7 +133,7 @@ Internal development metrics, including dev24k proxy metrics and sampled BERTSco
 
 ## Submission Boundary
 
-This repository is intended for result verification and method-level reproducibility of the same fixed final leaderboard system. It does not claim general state-of-the-art performance and does not report an unsupported final leaderboard score.
+This repository is intended for result verification by rerunning the submitted model pipeline from input images to JSON. It does not claim general state-of-the-art performance and does not report an unsupported final leaderboard score.
 
 ## External Asset Link
 

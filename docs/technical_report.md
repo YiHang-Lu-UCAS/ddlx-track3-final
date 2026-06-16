@@ -4,11 +4,7 @@
 
 This verification package corresponds to one fixed DDL-X Track 3 leaderboard submission. The submitted solution is organized as a single reproducible inference pipeline with three coordinated learned modules and deterministic post-processing. The three learned modules are a ConvNeXt-B face-level classifier, a YOLO-family localization ensemble fused by Weighted Boxes Fusion (WBF), and a Qwen2.5-VL-3B-Instruct explanation model adapted with a LoRA checkpoint. The pipeline produces the three required JSON fields together: `Classification result`, `Bounding boxes`, and `Visible forgery traces`.
 
-The final selected artifact is the `fake_nobox_nose_eyes_mouth` variant. Its recorded SHA256 is:
-
-```text
-a00d0f7e81d0742c03842eb45a8b010498b5bd502bf9c17d25620cdf89f11e97
-```
+The selected fallback behavior is the `fake_nobox_nose_eyes_mouth` variant for fake images without retained WBF boxes.
 
 ## Model architecture
 
@@ -106,19 +102,11 @@ swift infer \
   --num_beams 1
 ```
 
-The historical leaderboard artifact reused cached Qwen-generated text zips for exact reconstruction. Method-level reruns may produce semantically similar but byte-different text if software, CUDA kernels, or preprocessing differ.
+Model reruns may produce semantically similar but byte-different Qwen text if software, CUDA kernels, or preprocessing differ.
 
-## Reproducibility modes
+## Reproduce JSON from images
 
-The package supports two complementary verification views.
-
-Exact artifact verification checks the frozen selected zip against the recorded SHA256:
-
-```bash
-bash scripts/verify_bundle.sh
-```
-
-Method-level model rerun regenerates a fresh JSON package from input images:
+The verification package regenerates a fresh JSON package from input images:
 
 ```bash
 python -m src.ddlx_full_infer_v1.run_end_to_end \
@@ -128,7 +116,7 @@ python -m src.ddlx_full_infer_v1.run_end_to_end \
   --gpus auto
 ```
 
-The first path is for leaderboard artifact hash verification. The second path is for checking that the submitted model package can produce classification, localization, and explanation outputs from images.
+This path checks that the submitted model package can produce classification, localization, and explanation outputs from images.
 
 ## Asset and checksum references
 
@@ -137,7 +125,6 @@ The complete model inventory, pretrained backbone sources, file sizes, and check
 ```text
 docs/model_manifest.md
 docs/model_sources.md
-SHA256SUMS.txt
 FILE_MANIFEST.json
 ```
 
@@ -149,4 +136,4 @@ https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct
 
 ## Boundary
 
-This report describes the final challenge submission and its verification package. It does not claim general state-of-the-art performance, does not report an unsupported final leaderboard score, and does not claim that method-level Qwen reruns will reproduce byte-identical text. Byte-level identity is provided by the cached artifact reconstruction path; model-level reproducibility is provided by the released weights, prompts, and inference scripts.
+This report describes the final challenge submission and its model-rerun verification package. It does not claim general state-of-the-art performance, does not report an unsupported final leaderboard score, and does not claim that Qwen reruns will reproduce byte-identical text. Model-level reproducibility is provided by the released weights, prompts, and inference scripts.

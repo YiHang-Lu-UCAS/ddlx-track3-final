@@ -1,6 +1,6 @@
 # Verification Submission Guide
 
-This document maps the verification package to the materials requested by the DDL-X Track 3 organizing committee.
+This document maps the verification package to the materials requested by the DDL-X Track 3 organizing committee, focusing on rerunning the submitted model pipeline from input images to JSON.
 
 ## Single Submitted System
 
@@ -20,7 +20,7 @@ The system internally contains three fixed learned modules:
 2. a WBF localization branch over `detector_a_fullmask_stageb`, `detector_b_conservative_stageb`, and `detector_c_yolov8m_stageb`;
 3. a Qwen2.5-VL-3B-Instruct + LoRA checkpoint-1500 explanation branch conditioned on image, predicted label, and boxes.
 
-These branches are not alternative submissions. They are the components of the same final pipeline used to generate the selected leaderboard artifact.
+These branches are not alternative submissions. They are the components of the same final pipeline used to regenerate a DDL-X Track 3 JSON package from images.
 
 ## Links
 
@@ -56,16 +56,12 @@ scripts/                  organizer-facing verification and reproduction entrypo
 configs/                  final WBF and threshold configuration
 ```
 
-Important entrypoints:
+Important entrypoints for model rerun:
 
 ```text
-scripts/run_final_single_pipeline.sh
 scripts/run_end_to_end_from_images.sh
 scripts/smoke_end_to_end_from_images.sh
-scripts/verify_bundle.sh
-scripts/rebuild_from_saved_wbf_boxes.sh
 scripts/run_explanation_inference.sh
-scripts/launch_wbf_hetero_fulltest_4variants_v1.sh
 ```
 
 ## Environment Files
@@ -77,9 +73,7 @@ requirements.txt
 environment.yml
 ```
 
-The original verification environment used CUDA, PyTorch, Ultralytics, ModelScope/Swift, and Qwen-VL utilities.
-For exact artifact verification, only standard shell utilities and `sha256sum` are required.
-For method-level reruns of detection or explanation generation, use a GPU environment matching the package dependencies.
+The original verification environment used CUDA, PyTorch, Ultralytics, ModelScope/Swift, and Qwen-VL utilities. For model reruns of detection and explanation generation, use a GPU environment matching the package dependencies.
 
 ## Model Files
 
@@ -101,7 +95,7 @@ The model inventory and checksums are listed in `docs/model_manifest.md`.
 
 ## Data Preparation
 
-For raw-image model rerun, provide the official test image directory. The file
+Provide the official test image directory. The file
 stem is used as `image_id`; file stems should be unique.
 
 ```text
@@ -112,32 +106,9 @@ The end-to-end entrypoint creates `test_images.csv`, face/landmark metadata,
 classification predictions, detector outputs, WBF boxes, final JSON files, and a
 zip package.
 
-For exact hash verification of the selected final zip, no dataset images are required.
-
-For exact artifact reconstruction from saved WBF boxes, provide the original DDL-X metadata and face preprocessing outputs:
-
-```text
-image_scores.csv
-test_images.csv
-cls_preds/
-raw face metadata/output directory
-```
-
-The original server paths are preserved in `scripts/launch_wbf_hetero_fulltest_4variants_v1.sh` as provenance.
-In a clean verification environment, replace those paths with the corresponding local DDL-X metadata paths.
-
-For method-level Qwen explanation verification, prepare a JSONL file in the same format used by `src/ddli_explain_v1/`:
-
-```text
-image path
-predicted label
-predicted or fallback boxes
-prompt content for Visible forgery traces
-```
-
 ## Full Model Rerun
 
-If the organizing committee wants to use the submitted models to regenerate a fresh JSON package from images, run:
+To use the submitted models to regenerate a fresh JSON package from images, run:
 
 ```bash
 python -m src.ddlx_full_infer_v1.run_end_to_end \
@@ -159,56 +130,12 @@ image and face metadata
 -> final DDL-X JSON zip
 ```
 
-The regenerated JSON follows the same schema as the final leaderboard artifact.
-It may not be byte-identical because Qwen text generation can differ across software and CUDA environments.
+The regenerated JSON follows the same schema as the submitted Track 3 JSON files. Qwen-generated text may vary slightly across software and CUDA environments.
 
-## Inference and Verification Commands
-
-### 1. Verify the exact submitted artifact
+## Optional Explanation-Only Rerun
 
 ```bash
-bash scripts/run_final_single_pipeline.sh verify
-```
-
-or:
-
-```bash
-bash scripts/verify_bundle.sh final_artifact/submission_fake_nobox_nose_eyes_mouth.zip
-```
-
-Expected SHA256:
-
-```text
-a00d0f7e81d0742c03842eb45a8b010498b5bd502bf9c17d25620cdf89f11e97
-```
-
-### 2. Rebuild from saved WBF boxes and cached generated text
-
-```bash
-bash scripts/run_final_single_pipeline.sh rebuild \
-  /path/to/image_scores.csv \
-  /path/to/test_images.csv \
-  /path/to/cls_preds \
-  /path/to/raw_face_outputs \
-  /tmp/ddlx_rebuild_wbf
-```
-
-This path uses:
-
-```text
-evidence/detector_pred_boxes.json
-text_sources/normal.zip
-text_sources/fake_nobox_eyes.zip
-text_sources/fake_nobox_eyes_mouth.zip
-text_sources/fake_nobox_nose_eyes_mouth.zip
-```
-
-It is the exact artifact reconstruction path for the final leaderboard package.
-
-### 3. Rerun the explanation branch at method level
-
-```bash
-bash scripts/run_final_single_pipeline.sh qwen \
+bash scripts/run_explanation_inference.sh \
   /path/to/explain_inputs.jsonl \
   /tmp/ddlx_qwen_verify
 ```
@@ -220,8 +147,7 @@ models/explanation/qwen2_5_vl_3b_instruct/
 models/explanation/qwen2_5_vl_3b_lora_checkpoint1500/
 ```
 
-The regenerated text may be semantically similar but byte-different from the cached text used in the selected final zip.
-Use the cached `text_sources/` zips when checking exact hash equivalence.
+This command is only needed if the verifier wants to rerun the explanation module on prepared prompt JSONL files. The main recommended path is still `src.ddlx_full_infer_v1.run_end_to_end`, which creates the prompt inputs internally.
 
 ## Input and Output Formats
 
@@ -249,12 +175,6 @@ Bounding boxes are integer coordinates on the DDL-X 1-1000 scale.
 
 ## Checksums
 
-The final selected zip checksum is:
-
-```text
-a00d0f7e81d0742c03842eb45a8b010498b5bd502bf9c17d25620cdf89f11e97
-```
-
 Detailed model and asset checksums are in:
 
 ```text
@@ -272,7 +192,6 @@ docs/technical_report.md
 docs/training_summary.md
 docs/explanation_generation_details.md
 docs/compliance_audit.md
-docs/final_submission_evidence.md
 ```
 
 The workshop paper draft gives the same method-level description in paper form.
