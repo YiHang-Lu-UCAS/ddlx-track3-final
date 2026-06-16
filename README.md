@@ -180,6 +180,7 @@ See:
 docs/verification_submission_guide.md
 docs/reproduce_from_images.md
 docs/full_model_rerun.md
+docs/technical_report.md
 docs/model_manifest.md
 docs/training_summary.md
 docs/explanation_generation_details.md

@@ -84,7 +84,7 @@ input images
 -> MTCNN face/landmark preprocessing
 -> ConvNeXt-B face classification
 -> image score = max(face fake probability), threshold 0.20
--> old/repeat2/yolov8m detector streams
+-> detector_a_fullmask_stageb / detector_b_conservative_stageb / detector_c_yolov8m_stageb detector streams
 -> weighted box fusion
 -> fallback nose/eyes/mouth boxes when fake and no WBF box is retained
 -> base JSON

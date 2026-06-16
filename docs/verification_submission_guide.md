@@ -14,10 +14,10 @@ Bounding boxes
 Visible forgery traces
 ```
 
-The system internally contains three fixed branches:
+The system internally contains three fixed learned modules:
 
 1. a ConvNeXt-B face-level classification branch;
-2. a WBF localization branch over the `old`, `repeat2`, and `yolov8m` detector streams;
+2. a WBF localization branch over `detector_a_fullmask_stageb`, `detector_b_conservative_stageb`, and `detector_c_yolov8m_stageb`;
 3. a Qwen2.5-VL-3B-Instruct + LoRA checkpoint-1500 explanation branch conditioned on image, predicted label, and boxes.
 
 These branches are not alternative submissions. They are the components of the same final pipeline used to generate the selected leaderboard artifact.
@@ -152,7 +152,7 @@ That command reruns the fixed single submitted model solution:
 ```text
 image and face metadata
 -> ConvNeXt-B classification branch
--> three detector streams + WBF localization branch
+-> detector_a_fullmask_stageb + detector_b_conservative_stageb + detector_c_yolov8m_stageb + WBF localization branch
 -> fallback boxes when fake and no WBF box is retained
 -> prompt construction from image + label + boxes
 -> Qwen2.5-VL + LoRA explanation branch
@@ -268,6 +268,7 @@ The full Hugging Face bundle also includes `FILE_MANIFEST.json`.
 The technical report material is provided in:
 
 ```text
+docs/technical_report.md
 docs/training_summary.md
 docs/explanation_generation_details.md
 docs/compliance_audit.md
