@@ -11,7 +11,7 @@ from pathlib import Path
 def read_jsonl(path: Path) -> list[dict[str, object]]:
     if not path.exists():
         return []
-    with path.open(encoding="utf-8") as handle:
+    with path.open(encoding="utf-8-sig") as handle:
         return [json.loads(line) for line in handle if line.strip()]
 
 
@@ -25,6 +25,26 @@ def response_from(row: dict[str, object]) -> str:
         if isinstance(last, dict) and "content" in last:
             return str(last["content"])
     return ""
+
+
+def expected_statement(label: str) -> str:
+    return (
+        "This image has been tampered with."
+        if label == "fake"
+        else "This image has not been tampered with."
+    )
+
+
+def ensure_complete_explanation(response: str, label: str) -> tuple[str, bool]:
+    """Ensure the final JSON explanation ends with the required conclusion."""
+    response = response.strip()
+    expected = expected_statement(label)
+    if not response:
+        return expected, True
+    if expected in response:
+        return response, False
+    separator = "" if response.endswith((".", "!", "?")) else "."
+    return f"{response}{separator} Summary: {expected}", True
 
 
 def write_zip(json_dir: Path, zip_path: Path) -> str:
@@ -49,7 +69,7 @@ def main() -> None:
 
     args.output_json_dir.mkdir(parents=True, exist_ok=True)
     counts: Counter[str] = Counter()
-    missing_statement: Counter[str] = Counter()
+    final_statement_appended: Counter[str] = Counter()
     empty = 0
     chars: list[int] = []
     total = 0
@@ -60,21 +80,18 @@ def main() -> None:
             raise RuntimeError(f"Shard {shard:02d} row mismatch: manifest={len(manifest)} predictions={len(predictions)}")
         for info, pred in zip(manifest, predictions):
             image_id = str(info["image_id"])
-            payload = json.loads((args.source_json_dir / f"{image_id}.json").read_text(encoding="utf-8"))
+            payload = json.loads((args.source_json_dir / f"{image_id}.json").read_text(encoding="utf-8-sig"))
             response = response_from(pred).strip()
             if not response:
                 empty += 1
                 response = str(payload.get("Visible forgery traces", ""))
+            label = str(payload["Classification result"])
+            response, appended = ensure_complete_explanation(response, label)
+            if appended:
+                final_statement_appended[label] += 1
             payload["Visible forgery traces"] = response
-            expected = (
-                "This image has been tampered with."
-                if str(payload["Classification result"]) == "fake"
-                else "This image has not been tampered with."
-            )
-            if expected not in response:
-                missing_statement[str(payload["Classification result"])] += 1
             (args.output_json_dir / f"{image_id}.json").write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
-            counts[str(payload["Classification result"])] += 1
+            counts[label] += 1
             chars.append(len(response))
             total += 1
     digest = write_zip(args.output_json_dir, args.zip_path)
@@ -82,7 +99,7 @@ def main() -> None:
         "total": total,
         "labels": dict(counts),
         "empty_responses_replaced_by_base_text": empty,
-        "missing_expected_final_statement": dict(missing_statement),
+        "final_statement_appended": dict(final_statement_appended),
         "response_chars_min": min(chars) if chars else 0,
         "response_chars_mean": (sum(chars) / len(chars)) if chars else 0,
         "response_chars_max": max(chars) if chars else 0,

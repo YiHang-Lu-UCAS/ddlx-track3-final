@@ -107,19 +107,19 @@ launch_missing_statement_rerun_1024_6gpu_v1.sh     -> max_new_tokens=1024
 launch_remaining_statement_rerun_2048_6gpu_v1.sh   -> max_new_tokens=2048
 ```
 
-For method-level verification, the new reproduction entrypoints default to `2048`, the largest setting used in that progressive workflow, so the verifier can regenerate full explanations directly from the bundled model. For exact byte-level leaderboard hash verification, use the cached Qwen-generated text zips in `text_sources/`.
+For verification, the reproduction entrypoints default to `2048`, the largest setting used in that progressive workflow, so the verifier can regenerate full explanations directly from the bundled model. We recommend keeping this default for full reproduction. Lower values may be useful for debugging, but can increase the chance of truncated explanation text.
 
 ## Post-processing
 
-The Qwen response replaces only the `Visible forgery traces` field. The code checks for empty responses and verifies the expected final statement:
+The Qwen response replaces only the `Visible forgery traces` field. The merge step enforces a complete final explanation field in the output JSON. It checks for empty responses and verifies the expected final statement:
 
 - fake: `This image has been tampered with.`
 - real: `This image has not been tampered with.`
 
-For fake-nobox text reruns, if a generated fake response lacks the expected final statement, the postprocessor appends:
+If the generated response is empty, the deterministic base statement is used. If the generated response is non-empty but lacks the expected final statement, the postprocessor appends a short summary sentence, for example:
 
 ```text
 Summary: This image has been tampered with.
 ```
 
-This is deterministic formatting repair, not manual writing.
+The same rule is applied to real images with `Summary: This image has not been tampered with.` This deterministic formatting repair prevents the final JSON explanation field from ending in an incomplete or truncated state; it is not manual writing.
