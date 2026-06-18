@@ -38,17 +38,6 @@ The verification bundle includes the base-model copy used with the LoRA adapter:
 | `models/explanation/qwen2_5_vl_3b_instruct/tokenizer.json` | 7031645 | `c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539` |
 | `models/explanation/qwen2_5_vl_3b_instruct/tokenizer_config.json` | 5702 | `4abd3520120e266da84c0864fee064d1fb10806f02225911a47253dd38dc5f56` |
 
-## Verification Assets
-
-| Asset | Purpose | Size bytes | SHA256 |
-|---|---|---:|---|
-| `evidence/detector_pred_boxes.json` | Saved WBF boxes for exact artifact reconstruction | 5793176 | `d3b09c7ffa4f68055404b3e8f34533399828c6cb2ec7d97a9104dd5072287bea` |
-| `text_sources/normal.zip` | Cached Qwen-generated text for normal variant | 137057005 | `943c1738f3538bc808946fe9d04751a09a86db3fec3e4eae7c61f560af984dd3` |
-| `text_sources/fake_nobox_eyes.zip` | Cached Qwen-generated text for fake fallback variant | 137292269 | `ea114e9ec04159f00c2db20fccffa66ead6d61fbcdfaed3eb1e40fa6109ea48f` |
-| `text_sources/fake_nobox_eyes_mouth.zip` | Cached Qwen-generated text for fake fallback variant | 137391340 | `6a5e76d875d96c9d24f1a4337b8f1ccece077810b0d818569eaa20fc6a8cd51e` |
-| `text_sources/fake_nobox_nose_eyes_mouth.zip` | Cached Qwen-generated text for selected fake fallback variant | 137444357 | `1585bdd4890bad8acf71a9efbe76d8c7191f31c53617a88ad281062f39052169` |
-| `evidence/final_submission/submission_ddl_x_test_wbf_old_repeat2_yolov8m_pr125_iou035_post175_req2_textreuse_v1_fake_nobox_nose_eyes_mouth.zip` | Final selected leaderboard artifact | 137474463 | `a00d0f7e81d0742c03842eb45a8b010498b5bd502bf9c17d25620cdf89f11e97` |
-
 ## Fixed Hyperparameters
 
 | Subsystem | Setting |
@@ -64,9 +53,12 @@ The verification bundle includes the base-model copy used with the LoRA adapter:
 | Selected fallback variant | `fake_nobox_nose_eyes_mouth` |
 | Explanation adapter | `qwen2_5_vl_3b_lora_checkpoint1500` |
 | Method-level Qwen max new tokens | `2048` |
+| Qwen training framework | `ms-swift 4.2.1`, `PEFT 0.19.1` |
+| Qwen LoRA settings | rank `16`, alpha `32`, dropout `0.05`, all-linear targets |
+| Qwen SFT schedule | 1 epoch, lr `5e-5`, cosine, warmup `0.03`, global batch `32` |
 
 ## Notes
 
-- The final zip is exactly reproducible from saved WBF boxes and cached Qwen-generated text sources.
-- Method-level explanation reruns use the Qwen base model copy and LoRA adapter listed above.
+- Verification reruns start from input images and regenerate all three JSON fields.
+- Explanation reruns use the Qwen base model copy and LoRA adapter listed above.
 - Qwen reruns are not expected to reproduce byte-identical text unless the complete software, CUDA, preprocessing, and generation environment is held fixed.

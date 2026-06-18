@@ -28,11 +28,6 @@
 - Original path: `/home/pengsiran/projects_data/luyihang/experiments/ddli_bbox_detector_hetero_yolov8m512_stageab_v1/stageb_dev_adapt3_b96/weights/best.pt`
 - Legacy internal name: `yolov8m`
 
-## Text sources
-
-The final WBF package did not regenerate explanations. It reused the exact text zips listed in `docs/final_submission_evidence.md` and copied into `text_sources/`.
-
-
 ## Explanation Model
 
 ### Base VLM
@@ -51,4 +46,6 @@ The final WBF package did not regenerate explanations. It reused the exact text 
 
 ### Explanation generation provenance
 
-The final selected WBF submission reused text zip artifacts that were generated with this Qwen2.5-VL-3B base model plus checkpoint-1500 LoRA adapter. The exact text zip inputs used by the final builder are included under `text_sources/`.
+The released verification path regenerates explanations from each input image
+with this Qwen2.5-VL-3B base model and checkpoint-1500 LoRA adapter. The prompt
+also receives the model-predicted label and localized or fallback boxes.

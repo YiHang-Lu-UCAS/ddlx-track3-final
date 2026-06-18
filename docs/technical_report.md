@@ -58,7 +58,7 @@ models/classifier/convnextb_cls_dev_adapt_head_stage4_last.pt
 
 The detector family was trained and selected through the scripts preserved under `scripts/training/` and `src/ddli_detector_v1/`. Detector A uses a fullmask continuation followed by Stage B development adaptation. Detector B continues from the earlier detector family with a conservative learning rate. Detector C starts from a YOLOv8m COCO initialization before Stage A fullmask training and Stage B development adaptation. The recorded detector settings include image size 512, batch size 96, six GPUs, AdamW optimization, and three epochs of Stage B adaptation.
 
-The explanation model uses Qwen2.5-VL-3B-Instruct as the base model and a LoRA adapter at checkpoint-1500. The adapter was selected using an internal sampled BERTScore evaluation, documented in `docs/explanation_generation_details.md` and the evidence files under `evidence/explanation/`. This BERTScore evaluation is not an official challenge metric.
+The explanation model uses Qwen2.5-VL-3B-Instruct as the base model and a LoRA adapter at checkpoint-1500. The adapter was trained with ms-swift 4.2.1 using the released self-contained `scripts/train_qwen_lora.sh` entrypoint. The recorded settings are LoRA rank 16, alpha 32, dropout 0.05, all-linear targets, one epoch, learning rate 5e-5, global batch size 32 on eight GPUs, maximum sequence length 4096, and maximum image pixels 602112. The adapter was selected using an internal sampled BERTScore evaluation documented in `docs/explanation_generation_details.md`. This BERTScore evaluation is not an official challenge metric.
 
 ## Data usage
 

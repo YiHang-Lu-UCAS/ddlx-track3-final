@@ -54,6 +54,7 @@ src/ddli_explain_v1/      Qwen explanation data construction, inference launcher
 src/ddlx_full_infer_v1/   single public raw-image to JSON inference interface
 scripts/                  organizer-facing verification and reproduction entrypoints
 configs/                  final WBF and threshold configuration
+scripts/train_qwen_lora.sh self-contained Qwen LoRA training entrypoint
 ```
 
 Important entrypoints for model rerun:
@@ -62,6 +63,7 @@ Important entrypoints for model rerun:
 scripts/run_end_to_end_from_images.sh
 scripts/smoke_end_to_end_from_images.sh
 scripts/run_explanation_inference.sh
+scripts/train_qwen_lora.sh
 ```
 
 ## Environment Files
@@ -71,9 +73,34 @@ The package includes:
 ```text
 requirements.txt
 environment.yml
+requirements-qwen-lock.txt
+environment-qwen.yml
+requirements-eval-lock.txt
 ```
 
-The original verification environment used CUDA, PyTorch, Ultralytics, ModelScope/Swift, and Qwen-VL utilities. For model reruns of detection and explanation generation, use a GPU environment matching the package dependencies.
+The environment is split because the verified vision and Qwen stacks used
+different PyTorch versions. `environment.yml` pins Python 3.10.13, PyTorch
+2.3.1+cu118, torchvision 0.18.1+cu118, Ultralytics 8.4.53, and timm 0.6.11.
+`environment-qwen.yml` pins Python 3.10.13, PyTorch 2.6.0+cu118, torchvision
+0.21.0+cu118, ms-swift 4.2.1, PEFT 0.19.1, and qwen-vl-utils 0.0.14. The public
+pipeline calls Swift from the second environment through `--swift-command`.
+
+## Explanation Training Entry Point
+
+The package includes a portable replacement for the original external
+`reference_code/train/run_sft.sh` dependency:
+
+```bash
+cp configs/qwen_lora_sft.env.example configs/qwen_lora_sft.env
+# Set MODEL_NAME_OR_PATH, TRAIN_DATA, VAL_DATA, and OUTPUT_DIR.
+bash scripts/train_qwen_lora.sh configs/qwen_lora_sft.env
+```
+
+The launcher validates the ms-swift JSONL and referenced images before running
+`swift sft`. Its defaults reproduce checkpoint-1500: LoRA rank 16, alpha 32,
+dropout 0.05, all-linear targets, one epoch, learning rate 5e-5, global batch
+size 32 on eight GPUs, maximum length 4096, and maximum pixels 602112. Dataset
+files are not redistributed because they are governed by the challenge EULA.
 
 ## Model Files
 
@@ -84,10 +111,10 @@ Download the assets with:
 hf download limitlesstrain/ddlx-track3-final-assets --local-dir hf_assets
 ```
 
-The Hugging Face repository stores the complete verification bundle under:
+The Hugging Face repository stores the model-rerun bundle under:
 
 ```text
-DDLX_Track3_FinalVerification_WBF_20260530_1431/
+DDLX_Track3_ModelRerunOnly_20260616/
 ```
 
 To run commands from this repository layout, copy or symlink the contents of that bundle into the repository root, or set paths explicitly when invoking scripts.

@@ -1,8 +1,6 @@
-final_submission:
+model_rerun:
   variant: fake_nobox_nose_eyes_mouth
-  tag: wbf_old_repeat2_yolov8m_pr125_iou035_post175_req2_textreuse_v1
-  server_generated_at: '2026-05-30 14:31:17.993090915 +0800'
-  sha256: a00d0f7e81d0742c03842eb45a8b010498b5bd502bf9c17d25620cdf89f11e97
+  mode: input_images_to_json
 classification:
   model: ConvNeXt-B face-level binary classifier
   image_aggregation: max(face_fake_probability)
@@ -22,4 +20,8 @@ fallback:
   selected_variant: fake_nobox_nose_eyes_mouth
   boxes: [nose, left_eye, right_eye, mouth]
 text:
-  mode: reuse_existing_text_zips
+  mode: qwen_model_rerun
+  model: Qwen2.5-VL-3B-Instruct
+  adapter: qwen2_5_vl_3b_lora_checkpoint1500
+  max_new_tokens: 2048
+  decoding: greedy

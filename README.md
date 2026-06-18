@@ -40,20 +40,30 @@ models/           README and expected model-weight layout.
 
 ## Setup
 
-Create an environment with either conda:
+The verified vision and Qwen stacks used different PyTorch versions. Create
+both locked environments:
 
 ```bash
 conda env create -f environment.yml
 conda activate ddlx-track3-solution
+conda env create -f environment-qwen.yml
 ```
 
-or pip:
+Equivalent pip lock files are:
 
 ```bash
 python -m pip install -r requirements.txt
+python -m pip install -r requirements-qwen-lock.txt
 ```
 
-CUDA, PyTorch, Ultralytics, ModelScope/Swift, and Qwen-VL utilities should match the verification machine.
+`environment.yml` runs preprocessing, classification, localization, WBF, and
+JSON assembly. `environment-qwen.yml` runs Qwen LoRA training and inference.
+Pass the Qwen environment's Swift executable to the public entrypoint with
+`--swift-command /path/to/ddlx-track3-qwen/bin/swift`.
+
+The recorded vision stack uses PyTorch 2.3.1+cu118, torchvision 0.18.1+cu118,
+Ultralytics 8.4.53, and timm 0.6.11. The Qwen stack uses PyTorch 2.6.0+cu118,
+ms-swift 4.2.1, PEFT 0.19.1, and qwen-vl-utils 0.0.14.
 
 ## Model Weights
 
@@ -63,11 +73,18 @@ Large model weights are not committed directly to git. They are hosted on Huggin
 https://huggingface.co/limitlesstrain/ddlx-track3-final-assets
 ```
 
-To download the model and verification assets into the repository root:
+To download the model-rerun bundle:
 
 ```bash
-hf download limitlesstrain/ddlx-track3-final-assets --local-dir .
+hf download limitlesstrain/ddlx-track3-final-assets \
+  --include "DDLX_Track3_ModelRerunOnly_20260616/**" \
+  --local-dir hf_assets
 ```
+
+The self-contained bundle root is
+`hf_assets/DDLX_Track3_ModelRerunOnly_20260616/`. Run commands from that
+directory, where `models/`, `src/`, `scripts/`, and the environment files are
+siblings. Alternatively, copy its contents into a GitHub checkout.
 
 The Hugging Face repository contains the model-rerun assets, including the Qwen2.5-VL base model copy, LoRA adapter, detector/classifier weights, source code, scripts, configuration files, and documentation.
 
@@ -102,6 +119,19 @@ python -m src.ddlx_full_infer_v1.run_end_to_end \
 
 The equivalent bash wrapper is `scripts/run_end_to_end_from_images.sh`.
 If Swift is installed in a separate environment, add `--swift-command /path/to/env/bin/swift`.
+
+## Explanation Training
+
+The Qwen LoRA training entrypoint is self-contained:
+
+```bash
+cp configs/qwen_lora_sft.env.example configs/qwen_lora_sft.env
+# Edit the four input/output paths in configs/qwen_lora_sft.env.
+bash scripts/train_qwen_lora.sh configs/qwen_lora_sft.env
+```
+
+Challenge training data are not redistributed. Authorized users must prepare
+the ms-swift JSONL records with the released data-construction scripts.
 
 This command scans input images, runs preprocessing, classification, localization,
 fallback box generation, Qwen explanation generation, and writes:

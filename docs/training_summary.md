@@ -2,6 +2,22 @@
 
 This bundle includes the training launchers and hyperparameters that produced the detector family used by the final WBF submission.
 
+## Explanation model training
+
+The Qwen2.5-VL-3B LoRA adapter can be trained without the original external
+reference-code directory:
+
+```bash
+cp configs/qwen_lora_sft.env.example configs/qwen_lora_sft.env
+bash scripts/train_qwen_lora.sh configs/qwen_lora_sft.env
+```
+
+The portable configuration records the checkpoint-1500 run: ms-swift 4.2.1,
+eight GPUs, LoRA rank 16, alpha 32, dropout 0.05, all-linear targets, one epoch,
+per-device batch size 1, gradient accumulation 4, learning rate 5e-5, cosine
+scheduling, warmup ratio 0.03, maximum length 4096, and maximum pixels 602112.
+Training and validation JSONL paths must point to authorized challenge data.
+
 ## detector_a_fullmask_stageb
 
 Final weight in bundle:

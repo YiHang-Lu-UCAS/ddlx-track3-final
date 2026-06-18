@@ -1,0 +1,2 @@
+# Optional dependency used only by the released BERTScore evaluation scripts.
+bert-score==0.3.13

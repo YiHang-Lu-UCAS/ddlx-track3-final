@@ -38,12 +38,24 @@ models/explanation/qwen2_5_vl_3b_lora_checkpoint1500/
 
 ## Command
 
+Create both locked environments:
+
 ```bash
+conda env create -f environment.yml
+conda env create -f environment-qwen.yml
+```
+
+Run the public pipeline from the vision environment and point it to Swift in
+the Qwen environment:
+
+```bash
+conda activate ddlx-track3-solution
 python -m src.ddlx_full_infer_v1.run_end_to_end \
   --image-dir /path/to/test/images \
   --model-root /path/to/model_package/models \
   --out-dir /path/to/output \
-  --gpus auto
+  --gpus auto \
+  --swift-command /path/to/ddlx-track3-qwen/bin/swift
 ```
 
 The equivalent bash wrapper is:
@@ -136,7 +148,7 @@ such as `128`. This validates Qwen loading and merge format, but the generated
 text may be truncated before the expected final statement. The default full
 rerun setting is `2048`.
 
-## Exact Artifact vs Model Rerun
+## Model-Rerun Reproducibility
 
 This raw-image path regenerates a fresh JSON package from the submitted model
 package. Qwen-generated text can be sensitive to software, CUDA, preprocessing,
