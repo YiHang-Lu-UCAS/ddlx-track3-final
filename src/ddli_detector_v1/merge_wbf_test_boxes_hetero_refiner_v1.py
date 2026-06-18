@@ -15,8 +15,9 @@ from sklearn.multioutput import MultiOutputRegressor
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-sys.path.insert(0, "/home/pengsiran/projects_data/luyihang/ddli_segmentation_v1")
-from eval_bboxes_against_json import load_json_boxes, load_manifest_unique
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+from src.ddli_evaluation_v1.eval_bboxes_against_json import load_json_boxes, load_manifest_unique
 
 
 ROOT = Path("/home/pengsiran/projects_data/luyihang")

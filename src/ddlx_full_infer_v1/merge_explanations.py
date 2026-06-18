@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import shutil
 import zipfile
 from collections import Counter
 from pathlib import Path
@@ -67,6 +68,8 @@ def main() -> None:
     parser.add_argument("--num-shards", type=int, default=1)
     args = parser.parse_args()
 
+    if args.output_json_dir.exists():
+        shutil.rmtree(args.output_json_dir)
     args.output_json_dir.mkdir(parents=True, exist_ok=True)
     counts: Counter[str] = Counter()
     final_statement_appended: Counter[str] = Counter()

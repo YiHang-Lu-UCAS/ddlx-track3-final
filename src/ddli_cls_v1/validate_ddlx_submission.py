@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import zipfile
 from pathlib import Path
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
@@ -18,7 +19,7 @@ def list_images(image_dir: Path) -> list[Path]:
 def validate_one(path: Path) -> list[str]:
     errors: list[str] = []
     try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
     except Exception as exc:
         return [f"{path.name}: invalid json: {exc}"]
     missing = REQUIRED_KEYS - set(payload)
@@ -34,15 +35,21 @@ def validate_one(path: Path) -> list[str]:
     if label == "real" and bbox is not None:
         errors.append(f"{path.name}: real sample must have null bbox")
     if label == "fake":
-        if not (isinstance(bbox, list) and len(bbox) == 4):
-            errors.append(f"{path.name}: fake sample must have 4-number bbox")
+        boxes = [bbox] if isinstance(bbox, list) and len(bbox) == 4 and all(isinstance(v, int) for v in bbox) else bbox
+        if not isinstance(boxes, list) or not boxes:
+            errors.append(f"{path.name}: fake sample must have at least one bbox")
         else:
-            for value in bbox:
-                if not isinstance(value, int) or not (1 <= value <= 1000):
-                    errors.append(f"{path.name}: bbox value out of range/int: {bbox}")
-                    break
-            if bbox[0] > bbox[2] or bbox[1] > bbox[3]:
-                errors.append(f"{path.name}: bbox order invalid: {bbox}")
+            for box in boxes:
+                if not isinstance(box, list) or len(box) != 4:
+                    errors.append(f"{path.name}: bbox must contain four coordinates: {box!r}")
+                    continue
+                for value in box:
+                    if not isinstance(value, int) or isinstance(value, bool) or not (1 <= value <= 1000):
+                        errors.append(f"{path.name}: bbox value out of range/int: {box}")
+                        break
+                if all(isinstance(value, int) and not isinstance(value, bool) for value in box):
+                    if box[0] >= box[2] or box[1] >= box[3]:
+                        errors.append(f"{path.name}: bbox order invalid: {box}")
     return errors
 
 
@@ -50,6 +57,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--image-dir", required=True)
     parser.add_argument("--json-dir", required=True)
+    parser.add_argument("--zip-path")
     args = parser.parse_args()
 
     images = list_images(Path(args.image_dir))
@@ -70,9 +78,30 @@ def main() -> None:
     for path in json_paths:
         errors.extend(validate_one(path))
         try:
-            labels[json.loads(path.read_text(encoding="utf-8")).get("Classification result", "")] += 1
+            labels[json.loads(path.read_text(encoding="utf-8-sig")).get("Classification result", "")] += 1
         except Exception:
             pass
+
+    if args.zip_path:
+        zip_path = Path(args.zip_path)
+        if not zip_path.is_file():
+            errors.append(f"missing_zip={zip_path}")
+        else:
+            with zipfile.ZipFile(zip_path) as archive:
+                bad_entry = archive.testzip()
+                names = archive.namelist()
+                expected_names = {f"json/{stem}.json" for stem in image_stems}
+                actual_names = set(names)
+                if bad_entry is not None:
+                    errors.append(f"corrupt_zip_entry={bad_entry}")
+                if len(names) != len(actual_names):
+                    errors.append("zip contains duplicate entry names")
+                missing_zip = expected_names - actual_names
+                extra_zip = actual_names - expected_names
+                if missing_zip:
+                    errors.append(f"missing_zip_json={len(missing_zip)} first={sorted(missing_zip)[:5]}")
+                if extra_zip:
+                    errors.append(f"extra_zip_entries={len(extra_zip)} first={sorted(extra_zip)[:5]}")
 
     print(f"images={len(images)} json={len(json_paths)} real={labels['real']} fake={labels['fake']}")
     if errors:

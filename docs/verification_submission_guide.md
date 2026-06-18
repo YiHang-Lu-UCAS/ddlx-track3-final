@@ -51,6 +51,7 @@ src/ddli_cls_v1/          classification utilities and submission validation
 src/ddli_classification_v1/ ConvNeXt-B training and test inference code
 src/ddli_detector_v1/     detector/WBF training, sweep, merge, and package builders
 src/ddli_explain_v1/      Qwen explanation data construction, inference launchers, and scoring
+src/ddli_evaluation_v1/   shared localization ground-truth and region-IoU evaluation utilities
 src/ddlx_full_infer_v1/   single public raw-image to JSON inference interface
 scripts/                  organizer-facing verification and reproduction entrypoints
 configs/                  final WBF and threshold configuration

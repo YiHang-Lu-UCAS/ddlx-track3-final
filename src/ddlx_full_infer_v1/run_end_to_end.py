@@ -55,6 +55,11 @@ def main() -> None:
     out_dir = args.out_dir.expanduser().resolve()
     if out_dir.exists() and args.force:
         shutil.rmtree(out_dir)
+    elif out_dir.exists() and any(out_dir.iterdir()):
+        raise SystemExit(
+            f"Output directory is not empty: {out_dir}\n"
+            "Use a new --out-dir or pass --force to replace the previous run."
+        )
     out_dir.mkdir(parents=True, exist_ok=True)
 
     model = DDLXTrack3Model(args.model_root.expanduser().resolve())
@@ -298,6 +303,20 @@ def main() -> None:
             cwd=repo,
             env=env,
         )
+
+    run(
+        python_cmd(
+            "src.ddli_cls_v1.validate_ddlx_submission",
+            "--image-dir",
+            str(args.image_dir),
+            "--json-dir",
+            str(final_json),
+            "--zip-path",
+            str(out_dir / "submission_model_rerun.zip"),
+        ),
+        cwd=repo,
+        env=env,
+    )
 
     summary = {
         "mode": "single_model_package_end_to_end",

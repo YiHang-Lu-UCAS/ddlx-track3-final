@@ -2,9 +2,10 @@ from __future__ import annotations
 import argparse,csv,gzip,json,pickle,sys
 from collections import defaultdict
 from pathlib import Path
-sys.path.insert(0, '/home/pengsiran/projects_data/luyihang/ddli_segmentation_v1')
-from eval_bboxes_against_json import load_manifest_unique,load_json_boxes
-from eval_region_iou_multibox import union_area
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+from src.ddli_evaluation_v1.eval_bboxes_against_json import load_manifest_unique,load_json_boxes
+from src.ddli_evaluation_v1.eval_region_iou_multibox import union_area
 
 def overlap(a,b):
  ix=max(0,min(a[2],b[2])-max(a[0],b[0])); iy=max(0,min(a[3],b[3])-max(a[1],b[1])); inter=ix*iy; aa=(a[2]-a[0])*(a[3]-a[1]); bb=(b[2]-b[0])*(b[3]-b[1]); u=aa+bb-inter

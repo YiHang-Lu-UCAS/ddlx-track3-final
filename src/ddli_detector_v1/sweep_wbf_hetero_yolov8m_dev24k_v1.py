@@ -6,12 +6,12 @@ from collections import defaultdict
 from pathlib import Path
 import sys
 
-sys.path.insert(0, "/home/pengsiran/projects_data/luyihang/ddli_classification_v1")
-sys.path.insert(0, "/home/pengsiran/projects_data/luyihang/ddli_segmentation_v1")
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
 
-from eval_bboxes_against_json import load_json_boxes, load_manifest_unique
-from eval_region_iou_multibox import union_area
-from sweep_cls_gate_cleanup_e2e import face_scores
+from src.ddli_evaluation_v1.eval_bboxes_against_json import load_json_boxes, load_manifest_unique
+from src.ddli_evaluation_v1.eval_region_iou_multibox import union_area
+from src.ddli_classification_v1.sweep_cls_gate_cleanup_e2e import face_scores
 
 
 ROOT = Path("/home/pengsiran/projects_data/luyihang")

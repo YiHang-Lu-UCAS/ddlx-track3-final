@@ -101,8 +101,13 @@ input images
 -> fallback nose/eyes/mouth boxes when fake and no WBF box is retained
 -> base JSON
 -> Qwen2.5-VL + LoRA explanation generation
+-> automatic JSON/schema/zip validation
 -> final JSON directory and zip
 ```
+
+The command refuses to reuse a non-empty output directory unless `--force` is
+provided. This prevents JSON files from an earlier run from entering a new
+submission archive.
 
 ## Outputs
 

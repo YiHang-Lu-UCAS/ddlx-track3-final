@@ -2,6 +2,11 @@
 
 This bundle includes the training launchers and hyperparameters that produced the detector family used by the final WBF submission.
 
+The scripts under `scripts/training/` preserve the original server launch
+commands and therefore contain original dataset and experiment paths. They are
+provenance records. The reusable trainers under `src/ddli_classification_v1/`
+and `src/ddli_detector_v1/` expose command-line paths for a new environment.
+
 ## Explanation model training
 
 The Qwen2.5-VL-3B LoRA adapter can be trained without the original external

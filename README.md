@@ -134,7 +134,8 @@ Challenge training data are not redistributed. Authorized users must prepare
 the ms-swift JSONL records with the released data-construction scripts.
 
 This command scans input images, runs preprocessing, classification, localization,
-fallback box generation, Qwen explanation generation, and writes:
+fallback box generation, Qwen explanation generation, validates the JSON/zip
+schema and file counts, and writes:
 
 ```text
 /path/to/output/final_json/*.json
